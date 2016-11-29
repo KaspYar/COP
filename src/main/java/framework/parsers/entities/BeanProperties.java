@@ -4,6 +4,7 @@ public class BeanProperties {
 
     private String name;
     private String  value;
+    private String reference;
 
     public String getName() {
         return name;
@@ -19,5 +20,13 @@ public class BeanProperties {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
     }
 }

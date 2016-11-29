@@ -27,9 +27,9 @@
   
 
   <bean id="garage" class="application.classes.Garage">
-	<constructor-arg ref="car" />
-	<!-- <property name="..." value="..." />
-	<property name="..." ref="..." /> -->
+	<!--<constructor-arg ref="car" /> -->
+	<property name="car" ref="car" />
+      <!-- <property name="..." value="..." /> -->
   </bean>
 
   <!-- more bean definitions go here -->

@@ -4,6 +4,9 @@ public class Garage {
 
     private Car car;
 
+    public Garage() {
+    }
+
     public Garage(Car car) {
         this.car = car;
     }
@@ -11,5 +14,13 @@ public class Garage {
     @Override
     public String toString() {
         return "garage with car: "+ car.toString();
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car = car;
     }
 }

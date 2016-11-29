@@ -86,6 +86,8 @@ public class SaxParser extends DefaultHandler implements Parser {
             properties.setName(attributes.getValue("name"));
             properties.setValue(attributes.getValue("value"));
 
+            properties.setReference(attributes.getValue("ref"));
+
             beanTmp.getProperties().add(properties);
         }
     }

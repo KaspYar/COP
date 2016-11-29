@@ -66,12 +66,21 @@ public class XmlBeanFactory implements BeanFactory {
 
                 if (!props.isEmpty()) {
                     for (int i = 0; i < props.size(); i++) {
-                        char first = Character.toUpperCase(props.get(i).getName().charAt(0));
-                        String methodName = "set" + first + props.get(i).getName().substring(1);
-                        Method method = object.getClass().getMethod(methodName,
-                                new Class[]{props.get(i).getValue().getClass()});
-                        method.invoke(object, props.get(i).getValue());
-                        i++;
+                        BeanProperties beanProperty = props.get(i);
+                        char first = Character.toUpperCase(beanProperty.getName().charAt(0));
+                        String methodName = "set" + first + beanProperty.getName().substring(1);
+                        if (beanProperty.getValue() != null) {
+                            Method method = object.getClass().getMethod(methodName,
+                                    new Class[]{beanProperty.getValue().getClass()});
+                            method.invoke(object, beanProperty.getValue());
+                        } else {
+                            Object o = beanTable.get(beanProperty.getReference());
+                            if (o == null)
+                                throw new ClassNotFoundException("Bean not found: "+ beanProperty.getName());
+                            Method method = object.getClass().getMethod(methodName,
+                                    new Class[]{beanTable.get(beanProperty.getReference()).getClass()});
+                            method.invoke(object, beanTable.get(beanProperty.getReference()));
+                        }
                     }
                 }
 
