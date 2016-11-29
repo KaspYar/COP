@@ -7,6 +7,7 @@ import java.util.List;
 
 import framework.parsers.Bean;
 import framework.parsers.entities.BeanConstructorParameters;
+import framework.parsers.entities.BeanProperties;
 
 public class XmlBeanFactory implements BeanFactory {
 
@@ -61,15 +62,15 @@ public class XmlBeanFactory implements BeanFactory {
                     object = ctor.newInstance();
                 }
 
-                List<String> props = b.getProperties();
+                List<BeanProperties> props = b.getProperties();
 
                 if (!props.isEmpty()) {
                     for (int i = 0; i < props.size(); i++) {
-                        char first = Character.toUpperCase(props.get(i).charAt(0));
-                        String methodName = "set" + first + props.get(i).substring(1);
+                        char first = Character.toUpperCase(props.get(i).getName().charAt(0));
+                        String methodName = "set" + first + props.get(i).getName().substring(1);
                         Method method = object.getClass().getMethod(methodName,
-                                new Class[]{props.get(i + 1).getClass()});
-                        method.invoke(object, props.get(i + 1));
+                                new Class[]{props.get(i).getValue().getClass()});
+                        method.invoke(object, props.get(i).getValue());
                         i++;
                     }
                 }

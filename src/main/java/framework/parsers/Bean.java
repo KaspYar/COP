@@ -1,6 +1,7 @@
 package framework.parsers;
 
 import framework.parsers.entities.BeanConstructorParameters;
+import framework.parsers.entities.BeanProperties;
 
 import java.util.ArrayList;
 
@@ -8,13 +9,13 @@ public class Bean {
     String name;
     String className;
     ArrayList<BeanConstructorParameters> constructorArg = new ArrayList<>();
-    ArrayList<String> properties = new ArrayList<>();
+    ArrayList<BeanProperties> properties = new ArrayList<>();
 
-    public ArrayList<String> getProperties() {
+    public ArrayList<BeanProperties> getProperties() {
         return properties;
     }
 
-    public void setProperties(ArrayList<String> properties) {
+    public void setProperties(ArrayList<BeanProperties> properties) {
         this.properties = properties;
     }
 
