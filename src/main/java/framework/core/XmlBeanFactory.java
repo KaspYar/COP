@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import framework.parsers.Bean;
+import framework.parsers.entities.BeanConstructorParameters;
 
 public class XmlBeanFactory implements BeanFactory {
     
@@ -25,33 +26,31 @@ public class XmlBeanFactory implements BeanFactory {
                 Constructor<?> ctor;
                 Object object;
                 
-                List<String> ca = b.getConstructorArg();
+                List<BeanConstructorParameters> ca = b.getConstructorArg();
                 
                 if (!ca.isEmpty()) {
                     
-                    Class<?>[] consClasses = new Class[ca.size() / 2];
+                    Class<?>[] consClasses = new Class[ca.size()];
                     
-                    for (int i = 0, j = 0; i < ca.size(); i+=2) {
-                        if (ca.get(i) == null || ca.get(i).contentEquals("String")) {
-                            consClasses[j] = String.class;
-                        } else if (classLibrary.containsKey(ca.get(i))) { 
-                            consClasses[j] = getPrimitiveClassForName(ca.get(i));
+                    for (int i = 0; i < ca.size(); i++) {
+                        if (ca.get(i).getType() == null || ca.get(i).getType().equals("String")) {
+                            consClasses[i] = String.class;
+                        } else if (classLibrary.containsKey(ca.get(i).getType())) {
+                            consClasses[i] = getPrimitiveClassForName(ca.get(i).getType());
                         } else {
-                            consClasses[j] = Class.forName(ca.get(i));
+                            consClasses[i] = Class.forName(ca.get(i).getType());
                         }
-                        j++;
                     }
                     ctor = clazz.getConstructor(consClasses);
                     Object[] consArgs = new Object[consClasses.length];
-                    for (int i = 1, j = 0; i < ca.size(); i+=2) {
-                        if (consClasses[j].isPrimitive()){
-                            consArgs[j] = 
-                                    getWrapperClassValueForPrimitiveType(consClasses[j], ca.get(i));
+                    for (int i = 0; i < ca.size(); i++) {
+                        if (consClasses[i].isPrimitive()){
+                            consArgs[i] =
+                                    getWrapperClassValueForPrimitiveType(consClasses[i], ca.get(i).getValue());
                         }
                         else {
-                            consArgs[j] = consClasses[j].cast(ca.get(i));
+                            consArgs[i] = consClasses[i].cast(ca.get(i).getValue());
                         }
-                        j++;
                     }
                     object = ctor.newInstance(consArgs);
                 } else {

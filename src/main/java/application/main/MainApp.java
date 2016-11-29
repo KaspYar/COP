@@ -7,10 +7,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 
-import application.classes.Bus;
-import application.classes.Car;
-import application.classes.GreetingService;
-import application.classes.Transport;
+import application.classes.*;
 import framework.core.Autowiring;
 import framework.core.BeanFactory;
 import framework.core.GenericXmlApplicationContext;
@@ -202,27 +199,9 @@ public class MainApp {
         Transport car = 
                 (Car) factory.getBean("car", Transport.class);
         System.out.println(car.toString());
-        
-        //================
-        //================ REFLECTION API DEMO
-        //================
-        System.out.println();
-        System.out.println("================ REFLECTION API DEMO ================");
-        System.out.println();
-        
-        System.out.println(new ObjectInfo(bus, "bus").toString());
-        System.out.println("==========");
-        System.out.println(new ObjectInfo(bus.toString(), 
-                "String representation of the 'bus' object").toString());
-        
-        //================
-        //================ CUSTOM INTERCEPTOR AUTOWIRING THROUGH ANNOTATION DEMO
-        //================
-        //(to prevent recompiling by Eclipse, switch Project > Build Automatically off)
-        String output = "TeST InTercepTor";
-        System.out.println("Unintercepted string: " + output);
-        System.out.println("Intercepted string: " + activeInterceptor.interceptOutputString(output));
-        
+
+        Garage garage = factory.getBean("garage", Garage.class);
+        System.out.println(garage.toString());
         //This block is needed for being able to inspect currently loaded classes 
         //with tools like Java VisualVM
         System.out.println("Press any key to exit...");

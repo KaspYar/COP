@@ -26,14 +26,12 @@
   
   
 
-  <!-- 
-  <bean id="..." class="...">
-	<constructor-arg ref="..." />
-	<property name="..." value="..." />
-	<property name="..." ref="..." />
+  <bean id="garage" class="application.classes.Garage">
+	<constructor-arg ref="car" />
+	<!-- <property name="..." value="..." />
+	<property name="..." ref="..." /> -->
   </bean>
-  -->
- 
+
   <!-- more bean definitions go here -->
 
 </beans>

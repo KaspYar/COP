@@ -8,6 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import framework.parsers.entities.BeanConstructorParameters;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -69,8 +70,14 @@ public class SaxParser extends DefaultHandler implements Parser {
         }
         
         if (elementName.equalsIgnoreCase("constructor-arg")) {
-            beanTmp.getConstructorArg().add(attributes.getValue("type"));
-            beanTmp.getConstructorArg().add(attributes.getValue("value"));
+            BeanConstructorParameters params = new BeanConstructorParameters();
+
+            params.setType(attributes.getValue("type"));
+            params.setValue(attributes.getValue("value"));
+
+            params.setRef(attributes.getValue("ref"));
+
+            beanTmp.getConstructorArg().add(params);
         }
         
         if (elementName.equalsIgnoreCase("property")) {
