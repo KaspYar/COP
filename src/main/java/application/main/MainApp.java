@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 
 import application.classes.*;
-import framework.core.Autowiring;
+import framework.core.annotations.Autowiring;
 import framework.core.BeanFactory;
 import framework.core.GenericXmlApplicationContext;
 import framework.core.Interceptor;
@@ -211,6 +211,14 @@ public class MainApp {
 
         Garage garage = factory.getBean("garage", Garage.class);
         System.out.println(garage.toString());
+
+        for ( Object clazz : factory.getComponents()){
+            System.out.println("Comm class: " + clazz);
+        }
+
+        for ( Object clazz : factory.getComponentsValues()){
+            System.out.println("Comm value: " + clazz);
+        }
         //This block is needed for being able to inspect currently loaded classes 
         //with tools like Java VisualVM
         System.out.println("Press any key to exit...");

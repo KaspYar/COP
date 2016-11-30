@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import framework.core.XmlBeanDefinitionReader.ParserTypes;
+import framework.core.annotations.Autowiring;
 
 public class GenericXmlApplicationContext {
     

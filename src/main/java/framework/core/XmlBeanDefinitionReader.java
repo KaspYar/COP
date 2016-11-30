@@ -6,9 +6,10 @@ import framework.parsers.Bean;
 import framework.parsers.SaxParser;
 
 public class XmlBeanDefinitionReader {
-    
-    public static enum ParserTypes {DOM, SAX, StAX};
-    
+
+    public static enum ParserTypes {DOM, SAX, StAX;};
+
+    private String packageName;
     private List<Bean> beanList;
     private List<Bean> interceptorList;
     private ParserTypes parserType;
@@ -38,13 +39,18 @@ public class XmlBeanDefinitionReader {
     public void setParserType(ParserTypes parserType) {
         this.parserType = parserType;
     }
-    
+
+    public String getPackageName() {
+        return packageName;
+    }
+
     public void loadBeanDefinitions(String fileName) {
         
         switch (parserType) {
             case SAX:
                 beanList = new SaxParser(fileName).getBeanList();
                 interceptorList = new SaxParser(fileName).getInterceptorList();
+                packageName  = new SaxParser(fileName).getPackageToScan();
                 break;
             default:
                 throw new IllegalArgumentException();

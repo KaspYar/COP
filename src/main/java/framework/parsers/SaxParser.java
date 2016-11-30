@@ -21,7 +21,8 @@ public class SaxParser extends DefaultHandler implements Parser {
     String xmlFileName;
     String tmpValue;
     Bean beanTmp;
-    
+    private String packageToScan;
+
     public List<Bean> getBeanList() {
         return beanList;
     }
@@ -91,8 +92,16 @@ public class SaxParser extends DefaultHandler implements Parser {
 
             beanTmp.getProperties().add(properties);
         }
+
+        if (elementName.equalsIgnoreCase("component-scan")) {
+            packageToScan = attributes.getValue("base-package");
+        }
     }
-    
+
+    public String getPackageToScan() {
+        return packageToScan;
+    }
+
     @Override
     public void endElement(String s, String s1, String element) throws SAXException {
         if (element.equals("bean")) {

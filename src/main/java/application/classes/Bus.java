@@ -1,5 +1,8 @@
 package application.classes;
 
+import framework.core.annotations.Component;
+
+@Component
 public class Bus implements Transport {
     private String message;
     
@@ -17,5 +20,12 @@ public class Bus implements Transport {
 
     public void getTransport() {
         System.out.println(message);
+    }
+
+    @Override
+    public String toString() {
+        return "Bus{" +
+                "message='" + message + '\'' +
+                '}';
     }
 }

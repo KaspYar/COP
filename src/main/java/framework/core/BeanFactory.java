@@ -63,4 +63,7 @@ public interface BeanFactory {
 
         return res;
     }
+    Object[] getComponents();
+
+    Object[] getComponentsValues();
 }
