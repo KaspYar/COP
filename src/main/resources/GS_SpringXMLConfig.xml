@@ -12,7 +12,7 @@
 	<property name="message" value="Transport type is Bus" />
   </bean>
   
-  <bean id="bus2" class="application.classes.Bus"></bean>
+  <bean id="bus2" class="application.classes.Bus" scope="prototype"></bean>
   
   <bean id="car" class="application.classes.Car">
 	<constructor-arg value="Ferrari" />

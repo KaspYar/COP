@@ -187,15 +187,24 @@ public class MainApp {
         GreetingService greetingService = 
                 (GreetingService) factory.getBean("greetingService", GreetingService.class);
         System.out.println(greetingService.getMessage());
-        
+
+
         Transport bus = 
                 (Bus) factory.getBean("bus", Transport.class);
         bus.getTransport();
-        
-        Transport bus2 = 
+
+        System.out.println("bus2");
+        Transport bus2 =
                 (Bus) factory.getBean("bus2", Transport.class);
         bus2.getTransport();
-        
+        ((Bus) bus2).setMessage("New message was set");
+
+
+        Transport bus3 =
+                (Bus) factory.getBean("bus2", Transport.class);
+        bus3.getTransport();
+        System.out.println("---------------");
+
         Transport car = 
                 (Car) factory.getBean("car", Transport.class);
         System.out.println(car.toString());

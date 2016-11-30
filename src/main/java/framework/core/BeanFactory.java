@@ -39,7 +39,7 @@ public interface BeanFactory {
     <T extends Object> T getBean(String string, Class<T> type);
     Object[] getInterceptors();
     
-    default Class<?> getPrimitiveClassForName(String primitiveTypeName) {
+    static Class<?> getPrimitiveClassForName(String primitiveTypeName) {
         Class<?> res = null;
 
         if (classLibrary.containsKey(primitiveTypeName)) {
@@ -49,7 +49,7 @@ public interface BeanFactory {
         return res;
     }
     
-    default Object getWrapperClassValueForPrimitiveType(Class<?> primitiveType, String stringValue) {
+    static Object getWrapperClassValueForPrimitiveType(Class<?> primitiveType, String stringValue) {
         Object res = null;
         
         try {

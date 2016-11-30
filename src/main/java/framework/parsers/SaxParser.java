@@ -68,6 +68,7 @@ public class SaxParser extends DefaultHandler implements Parser {
             beanTmp = new Bean();
             beanTmp.setName(attributes.getValue("id"));
             beanTmp.setClassName(attributes.getValue("class"));
+            beanTmp.setScope(attributes.getValue("scope"));
         }
         
         if (elementName.equalsIgnoreCase("constructor-arg")) {

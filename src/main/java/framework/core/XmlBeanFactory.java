@@ -1,18 +1,14 @@
 package framework.core;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import framework.parsers.Bean;
+
 import java.util.HashMap;
 import java.util.List;
 
-import framework.parsers.Bean;
-import framework.parsers.entities.BeanConstructorParameters;
-import framework.parsers.entities.BeanProperties;
-
 public class XmlBeanFactory implements BeanFactory {
 
-    HashMap<String, Object>  beanTable = new HashMap<String, Object>();
-    HashMap<String, Object> interceptorTable = new HashMap<String, Object>();
+    public static HashMap<String, Bean> beanTable = new HashMap<>();
+    HashMap<String, Object> interceptorTable = new HashMap<>();
 
     XmlBeanFactory(String xmlFilePath, XmlBeanDefinitionReader xbdr) {
         xbdr.loadBeanDefinitions(xmlFilePath);
@@ -21,70 +17,9 @@ public class XmlBeanFactory implements BeanFactory {
     }
 
     private void generateBeans(List<Bean> beanList) {
-        for (Bean b : beanList) {
+        for (Bean bean : beanList) {
             try {
-                final Class<?> clazz = Class.forName(b.getClassName());
-                Constructor<?> ctor;
-                Object object;
-
-                List<BeanConstructorParameters> ca = b.getConstructorArg();
-
-                if (!ca.isEmpty()) {
-
-                    Class<?>[] consClasses = new Class[ca.size()];
-                    Object[] consArgs = new Object[ca.size()];
-
-                    for (int i = 0; i < ca.size(); i++) {
-                        BeanConstructorParameters params = ca.get(i);
-
-                        if (params.getRef() != null) {
-                            if (getBean(params.getRef()) == null)
-                                throw new ClassNotFoundException("Bean not found: "+ params.getRef());
-                            consClasses[i] = beanTable.get(params.getRef()).getClass();
-                            consArgs[i] = beanTable.get(params.getRef());
-
-                        } else if (params.getType() == null || params.getType().equals("String")) {
-                            consClasses[i] = String.class;
-                            consArgs[i] = consClasses[i].cast(params.getValue());
-                        } else if (classLibrary.containsKey(params.getType())) {
-                            consClasses[i] = getPrimitiveClassForName(params.getType());
-                            consArgs[i] =
-                                    getWrapperClassValueForPrimitiveType(consClasses[i], params.getValue());
-                        } else {
-                            consClasses[i] = Class.forName(params.getType());
-                            consArgs[i] = consClasses[i].cast(params.getValue());
-                        }
-                    }
-                    ctor = clazz.getConstructor(consClasses);
-                    object = ctor.newInstance(consArgs);
-                } else {
-                    ctor = clazz.getConstructor();
-                    object = ctor.newInstance();
-                }
-
-                List<BeanProperties> props = b.getProperties();
-
-                if (!props.isEmpty()) {
-                    for (int i = 0; i < props.size(); i++) {
-                        BeanProperties beanProperty = props.get(i);
-                        char first = Character.toUpperCase(beanProperty.getName().charAt(0));
-                        String methodName = "set" + first + beanProperty.getName().substring(1);
-                        if (beanProperty.getValue() != null) {
-                            Method method = object.getClass().getMethod(methodName,
-                                    new Class[]{beanProperty.getValue().getClass()});
-                            method.invoke(object, beanProperty.getValue());
-                        } else {
-                            Object o = beanTable.get(beanProperty.getReference());
-                            if (o == null)
-                                throw new ClassNotFoundException("Bean not found: "+ beanProperty.getName());
-                            Method method = object.getClass().getMethod(methodName,
-                                    new Class[]{beanTable.get(beanProperty.getReference()).getClass()});
-                            method.invoke(object, beanTable.get(beanProperty.getReference()));
-                        }
-                    }
-                }
-
-                beanTable.put(b.getName(), object);
+                bean.getBeanInstance();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -109,7 +44,7 @@ public class XmlBeanFactory implements BeanFactory {
 
     @SuppressWarnings("unchecked")
     public <T> T getBean(String string, Class<T> type) {
-        return (T) beanTable.get(string);
+        return (T) beanTable.get(string).getBeanInstance();
     }
 
     public Object[] getInterceptors() {
