@@ -20,12 +20,12 @@ public class GenericXmlApplicationContext {
         }
     }
     
-    private static final Predicate<Class<?>> canInstantiate(Class<?> classToInstantiate) {
+    public static final Predicate<Class<?>> canInstantiate(Class<?> classToInstantiate) {
         return testClass -> 
             !testClass.isInterface() && classToInstantiate.isAssignableFrom(testClass);
     }
     
-    private static final Predicate<Class<?>> isTheSameClassAs(Class<?> anotherClass) {
+    public static final Predicate<Class<?>> isTheSameClassAs(Class<?> anotherClass) {
         return testClass -> 
             anotherClass.getName().equals(testClass.getName());
     }

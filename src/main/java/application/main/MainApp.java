@@ -219,6 +219,30 @@ public class MainApp {
         for ( Object clazz : factory.getComponentsValues()){
             System.out.println("Comm value: " + clazz);
         }
+
+        for ( Object clazz : factory.getServiceNames()){
+            System.out.println("Service class: " + clazz);
+        }
+
+        for ( Object clazz : factory.getServiceInstances()){
+            System.out.println("Serice value: " + clazz);
+        }
+
+        for ( Object clazz : factory.getRepositoriesNames()){
+            System.out.println("Repositories class: " + clazz);
+        }
+
+        for ( Object clazz : factory.getRepositoriesInstances()){
+            System.out.println("Repositories value: " + clazz);
+        }
+
+        for ( Object clazz : factory.getControllerNames()){
+            System.out.println("Controller class: " + clazz);
+        }
+
+        for ( Object clazz : factory.getControllerInstancess()){
+            System.out.println("Controller value: " + clazz);
+        }
         //This block is needed for being able to inspect currently loaded classes 
         //with tools like Java VisualVM
         System.out.println("Press any key to exit...");

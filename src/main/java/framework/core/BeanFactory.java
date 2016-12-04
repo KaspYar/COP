@@ -66,4 +66,16 @@ public interface BeanFactory {
     Object[] getComponents();
 
     Object[] getComponentsValues();
+
+    Object[] getServiceNames();
+
+    Object[] getServiceInstances();
+
+    Object[] getRepositoriesNames();
+
+    Object[] getRepositoriesInstances();
+
+    Object[] getControllerNames();
+
+    Object[] getControllerInstancess();
 }

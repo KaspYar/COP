@@ -1,11 +1,14 @@
 package framework.core;
 
-import framework.core.annotations.Component;
+import framework.core.annotations.*;
 import framework.parsers.Bean;
 import org.reflections.Reflections;
 
+import javax.naming.ConfigurationException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class XmlBeanFactory implements BeanFactory {
@@ -25,9 +28,12 @@ public class XmlBeanFactory implements BeanFactory {
         setupInterceptors(xbdr.getInterceptorList());
 
         generateComponents(xbdr.getPackageName());
-//        generateControllers(xbdr.getPackageName());
-//        generateServices(xbdr.getPackageName());
-//        generateRepositories(xbdr.getPackageName());
+
+        Reflections reflections = new Reflections(xbdr.getPackageName());
+        generator(reflections.getTypesAnnotatedWith(Service.class), serviceTable);
+        generator(reflections.getTypesAnnotatedWith(Repository.class), repositoryTable);
+        generator(reflections.getTypesAnnotatedWith(Controller.class), controllerTable);
+
     }
 
     private void generateComponents(String packageName) {
@@ -38,12 +44,99 @@ public class XmlBeanFactory implements BeanFactory {
                 final Object newInstance = clazz.newInstance();
                 componentsTable.put(clazz.getSimpleName().toLowerCase(), newInstance);
             } catch (InstantiationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             } catch (IllegalAccessException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
         }
     }
+
+    private void generator(Set<Class<?>> annotated, Map<String, Object> map) {
+        for (Class<?> clazz : annotated) {
+            try {
+                final Object newInstance = clazz.newInstance();
+                try {
+                    autowire(newInstance.getClass());
+                } catch (ConfigurationException e) {
+                    e.printStackTrace();
+                }
+                map.put(clazz.getSimpleName().toLowerCase(), newInstance);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void autowire(Class<?> classObject) throws ConfigurationException {
+        Field[] fields = classObject.getDeclaredFields();
+        for (Field currentField : fields) {
+            if (currentField.isAnnotationPresent(Autowiring.class)) {
+                ClassLoader myCL = Thread.currentThread().getContextClassLoader();
+                Field classLoaderClassesField = null;
+                Class<?> myCLClass = myCL.getClass();
+                while (myCLClass != java.lang.ClassLoader.class) {
+                    myCLClass = myCLClass.getSuperclass();
+                }
+                try {
+                    classLoaderClassesField = myCLClass.getDeclaredField("classes");
+                } catch (NoSuchFieldException | SecurityException e) {
+                    e.printStackTrace();
+                }
+                classLoaderClassesField.setAccessible(true);
+
+                List<Class<?>> classes = null;
+                try {
+                    classes = (List<Class<?>>) classLoaderClassesField.get(myCL);
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+                Class<?> currentFieldClass = currentField.getType();
+                Class<?> match = null;
+
+                if (!currentField.getAnnotation(Autowiring.class).value().isEmpty()) {
+                    Class<?> classInAnnotation = null;
+                    try {
+                        classInAnnotation = Class.forName(currentField.getAnnotation(Autowiring.class)
+                                .value());
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    if (GenericXmlApplicationContext.canInstantiate(currentFieldClass).test(classInAnnotation)) {
+                        match = classInAnnotation;
+                    } else {
+                        throw new ConfigurationException("Class specified in annotation is not compatible with "
+                                + currentFieldClass.getName() + ".");
+                    }
+
+                } else {
+                    if (!classes.stream().anyMatch(GenericXmlApplicationContext.canInstantiate(currentFieldClass))) {
+                        throw new ConfigurationException("No suitable implementation for "
+                                + currentFieldClass.getName() + " found. Please check your configuration file.");
+                    }
+
+                    match = classes.stream().filter(GenericXmlApplicationContext.canInstantiate(currentFieldClass)).findFirst().get();
+
+                    if (classes.stream().anyMatch(GenericXmlApplicationContext.canInstantiate(currentFieldClass)
+                            .and(GenericXmlApplicationContext.isTheSameClassAs(match).negate()))) {
+                        throw new ConfigurationException("Ambiguous configuration for "
+                                + currentFieldClass.getName() + ". Please check your configuration file.");
+                    }
+                }
+
+                try {
+                    currentField.setAccessible(true);
+                    currentField.set(null, match.newInstance());
+                } catch (IllegalArgumentException | IllegalAccessException | InstantiationException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        ;
+    }
+
 
     private void generateBeans(List<Bean> beanList) {
         for (Bean bean : beanList) {
@@ -77,15 +170,44 @@ public class XmlBeanFactory implements BeanFactory {
     }
 
     public Object[] getInterceptors() {
-        return (Object[]) interceptorTable.values().toArray();
+        return interceptorTable.values().toArray();
     }
 
     public Object[] getComponents() {
-        return (Object[]) componentsTable.keySet().toArray();
+        return componentsTable.keySet().toArray();
     }
 
     public Object[] getComponentsValues() {
-        return (Object[]) componentsTable.values().toArray();
+        return componentsTable.values().toArray();
     }
 
+    @Override
+    public Object[] getServiceNames() {
+        return serviceTable.keySet().toArray();
+    }
+
+    @Override
+    public Object[] getServiceInstances() {
+        return serviceTable.values().toArray();
+    }
+
+    @Override
+    public Object[] getRepositoriesNames() {
+        return repositoryTable.keySet().toArray();
+    }
+
+    @Override
+    public Object[] getRepositoriesInstances() {
+        return repositoryTable.values().toArray();
+    }
+
+    @Override
+    public Object[] getControllerNames() {
+        return controllerTable.keySet().toArray();
+    }
+
+    @Override
+    public Object[] getControllerInstancess() {
+        return controllerTable.values().toArray();
+    }
 }
